@@ -10,8 +10,8 @@ TARGET = lifeGame
 EXEC = $(BUILD_DIR)/$(TARGET)
 
 # Archivos fuente y objeto
-SRC = $(SRC_DIR)/lifeGame.asm
-OBJ = $(BUILD_DIR)/lifeGame.o
+SRC = $(SRC_DIR)/$(TARGET).asm
+OBJ = $(BUILD_DIR)/$(TARGET).o
 
 # Comandos
 NASM = nasm
@@ -19,7 +19,6 @@ LD = ld
 
 # Flags
 NASMFLAGS = -f elf64
-LDFLAGS =
 
 # Reglas
 all: $(EXEC)
