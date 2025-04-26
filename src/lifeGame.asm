@@ -1,8 +1,7 @@
 section .data
-    char db 0 ;TEMPORAL PAA IMPRIMIR CANTIDAD DE VECINOS
     nombreArchivo db "data/datos.txt", 0
-    filas equ 300
-    columnas equ 75
+    filas equ 50
+    columnas equ 100
     bytesTotales equ filas * (columnas+1)
 
     limpiarPantalla db 27, '[', '2', 'J', 27, '[', 'H' ; Secuencia ANSI para limpiar pantalla
@@ -64,9 +63,9 @@ _start:
         xor rsi, rsi
         syscall
 
-        xor rcx, rcx ; Índice para recorrer filas
+        xor rbp, rbp ; Índice para recorrer filas
         recorrerFilas:
-            cmp rcx, filas ; Verificar si sigue en rango
+            cmp rbp, filas ; Verificar si sigue en rango
             jge continuar
 
             xor rbx, rbx ; Índice para recorrer columnas
@@ -74,18 +73,19 @@ _start:
                 cmp rbx, columnas ; Verificar si sigue en rango
                 jge continuarRecorrerFilas
 
-                imul rdx, rcx, columnas+1
+                imul rdx, rbp, columnas+1
                 add rdx, rbx ; Índice total
 
                 xor r9, r9 ; Contador de vecinos
                 
+                xor r12, r12
                 xor r10, r10
                 add r10, -1 ; Índice para recorrer vecinos (filas)
                 recorrerVecinosFila:
                     cmp r10, 1
                     jg continuarVecinos
 
-                    mov r12, rcx
+                    mov r12, rbp
                     add r12, r10 ; Y de vecino
 
                     xor r11, r11
@@ -101,13 +101,13 @@ _start:
 
                         ; Verificar 0 <= Y < filas
                         cmp r12, 0
-                        jb recorrerVecinosColumna
+                        jl recorrerVecinosColumna
                         cmp r12, filas
                         jge recorrerVecinosColumna 
                     
                         ; Verificar 0 <= x < columnas
                         cmp r13, 0
-                        jb recorrerVecinosColumna
+                        jl recorrerVecinosColumna
                         cmp r13, columnas
                         jge recorrerVecinosColumna
 
@@ -136,24 +136,36 @@ _start:
                             jmp recorrerVecinosFila
 
                     continuarVecinos:
-                        add r9b, '0'
-                        mov [char], r9b
 
-                        mov rax, 1
-                        mov rdi, 1
-                        mov rsi, char
-                        mov rdx, 1
-                        syscall
+                        lea rdi, [matriz]
+                        add rdi, rdx
 
-                        inc rbx ; Incrementar contador de columnas
-                        jmp recorrerColumnas
+                        cmp r9, 2
+                        jl cero
+                        je saltar
+                        
+                        cmp r9, 3
+                        je uno
+                        jg cero
+
+                        cero:
+                            mov byte [rdi], '0'
+                            jmp saltar
+
+                        uno:
+                            mov byte [rdi], '1'
+                            jmp saltar
+
+                        saltar:
+                            inc rbx ; Incrementar contador de columnas
+                            jmp recorrerColumnas
 
                 continuarRecorrerFilas:
-                    inc rcx ; Incrementar contador de filas
+                    inc rbp ; Incrementar contador de filas
                     jmp recorrerFilas
             continuar:
                 inc r8 ; Incrementar contador del bucle
-                cmp r8, 1
+                cmp r8, 10000
                 je salir
                 jmp bucle
 
