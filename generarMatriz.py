@@ -2,8 +2,8 @@ import os
 import random
 
 # Variables configurables
-rows = 50
-cols = 100
+rows = 20
+cols = 50
 
 # Crear la carpeta "data" si no existe
 os.makedirs("data", exist_ok=True)

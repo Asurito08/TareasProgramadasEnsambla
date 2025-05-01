@@ -1,7 +1,7 @@
 section .data
     nombreArchivo db "data/datos.txt", 0
-    filas equ 50
-    columnas equ 100
+    filas equ 20
+    columnas equ 50
     bytesTotales equ filas * (columnas+1)
 
     limpiarPantalla db 27, '[', '2', 'J', 27, '[', 'H' ; Secuencia ANSI para limpiar pantalla
@@ -14,6 +14,7 @@ section .data
 
 section .bss
     matriz resb bytesTotales
+    matrizSiguiente resb bytesTotales
 
 section .text
     global _start
@@ -40,6 +41,11 @@ _start:
     mov rax, 3
     mov rdi, r12
     syscall
+
+    mov rsi, matriz
+    mov rdi, matrizSiguiente
+    mov rcx, bytesTotales
+    rep movsb
 
     bucle:
         
@@ -137,7 +143,7 @@ _start:
 
                     continuarVecinos:
 
-                        lea rdi, [matriz]
+                        lea rdi, [matrizSiguiente]
                         add rdi, rdx
 
                         cmp r9, 2
@@ -165,8 +171,12 @@ _start:
                     jmp recorrerFilas
             continuar:
                 inc r8 ; Incrementar contador del bucle
-                cmp r8, 10000
+                cmp r8, 1000
                 je salir
+                mov rsi, matrizSiguiente
+                mov rdi, matriz
+                mov rcx, bytesTotales
+                rep movsb
                 jmp bucle
 
                 salir:
